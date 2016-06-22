@@ -31,8 +31,8 @@ import {InboxItemWrapper} from "./inbox-item-wrapper";
   </ion-navbar>
   <ion-content>
     <ion-list #list>
-      <inbox-item-wrapper *ngFor="let email of emails; let i = index" (click)="favorite(email)" detail-none (touchstart)="tapOccurred(email, i)" (mousedown)="tapOccurred(email, i)">
-        <button ion-item>
+      <inbox-item-wrapper *ngFor="let email of emails; let i = index" (click)="favorite(email)">
+        <button ion-item detail-none>
           <ion-icon ios="ios-star-outline" md="ios-star-outline" item-left *ngIf="!email.favorited"></ion-icon>
           <ion-icon class="yellow" ios="ios-star" md="ios-star" item-left *ngIf="email.favorited"></ion-icon>
           <p>{{email.sender}}</p>
@@ -48,7 +48,6 @@ export class InboxPage{
 
   private selectedIndex:number = -1;
   emails: any[];
-  @ViewChild("list") listElementRef: ElementRef;
 
   constructor(protected emailDataProvider:EmailDataProvider){
   }
@@ -60,15 +59,9 @@ export class InboxPage{
   }
 
   ionViewDidEnter(){
-    console.log("listElementRef: ", this.listElementRef);
   }
 
   favorite(email:any){
-    email.favorited = !email.favorited;    
-  }
-
-  tapOccurred(email:any, index:number){
-    this.selectedIndex = index;
-    console.log("selected index: ", index);
+    email.favorited = !email.favorited;
   }
 }

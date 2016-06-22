@@ -77,7 +77,6 @@ ion-list{
 
 .left-cell{
   position: absolute;
-  background-color: red;
   opacity: .5;
   height: 100%;
   width: 100%;
@@ -86,13 +85,36 @@ ion-list{
   transform: translate3d(-100%, 0, 0);
 }
 
+.left-cell.disabled{
+  background-color: #777;
+}
+
+.left-cell.short{
+  background-color: #FF0000;
+}
+
+.left-cell.long{
+  background-color: #00FF00;
+}
+
 .right-cell{
   position: absolute;
-  background-color: blue;
   opacity: .5;
   height: 100%;
   width: 100%;
   top: 0;
   left: 0;
-  transform: translate3d(-100%, 0, 0);
+  transform: translate3d(100%, 0, 0);
+}
+
+.right-cell.disabled{
+  background-color: #777;
+}
+
+.right-cell.short{
+  background-color: #0000FF;
+}
+
+.right-cell.long{
+  background-color: #0F0F0F;
 }

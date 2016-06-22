@@ -30,14 +30,16 @@ export class DragGestureRecognizer extends GestureRecognizer {
 
   listen(){
     super.listen();
-    //this._hammerManager.on('panstart', this._onPanStartHandler);
     this._onPanStart = (event:HammerInput) => {
+      //console.log("Pan Start");
       this.onPanStart.emit(event);
     };
     this._onPanMove = (event:HammerInput) => {
+      //console.log("Pan Move");
       this.onPanMove.emit(event);
     };
     this._onPanEnd = (event:HammerInput) => {
+      //console.log("Pan End");
       this.onPanEnd.emit(event);
     };
     this._hammerManager.on('panstart', this._onPanStart);
