@@ -31,9 +31,19 @@ import {InboxItemWrapper} from "./inbox-item-wrapper";
   </ion-navbar>
   <ion-content>
     <ion-list #list>
-      <inbox-item-wrapper *ngFor="let email of emails; let i = index" (click)="favorite(email)">
+      <inbox-item-wrapper *ngFor="let email of emails; let i = index"
+        (click)="favorite(email)"
+        leftIconShort="checkmark"
+        leftIconLong="close"
+        rightIconShort="time"
+        rightIconLong="menu"
+        (leftShortSwipe)="onLeftShortSwipe()"
+        (leftLongSwipe)="onLeftLongSwipe()"
+        (rightShortSwipe)="onRightShortSwipe()"
+        (rightLongSwipe)="onRightLongSwipe()"
+      >
         <button ion-item detail-none>
-          <ion-icon ios="ios-star-outline" md="ios-star-outline" item-left *ngIf="!email.favorited"></ion-icon>
+          <ion-icon ios="ios-star-outline" md="ios-star-outline" item-left *ngIf="!email.favorited" primary></ion-icon>
           <ion-icon class="yellow" ios="ios-star" md="ios-star" item-left *ngIf="email.favorited"></ion-icon>
           <p>{{email.sender}}</p>
           <h2>{{email.subject}}</h2>
@@ -63,5 +73,21 @@ export class InboxPage{
 
   favorite(email:any){
     email.favorited = !email.favorited;
+  }
+
+  onLeftShortSwipe(){
+    console.log("onLeftShortSwipe received!");
+  }
+
+  onLeftLongSwipe(){
+    console.log("onLeftLongSwipe received!");
+  }
+
+  onRightShortSwipe(){
+    console.log("onRightShortSwipe received!");
+  }
+
+  onRightLongSwipe(){
+    console.log("onRightLongSwipe received!");
   }
 }

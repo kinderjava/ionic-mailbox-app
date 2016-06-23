@@ -15,46 +15,6 @@
     cursor: pointer;
 }
 
-.image-container{
-    display: inline-block;
-    padding: 10px;
-}
-
-.image{
-    background-color: grey;
-    height: 100%;
-}
-
-.contentContainer {
-    height: 100%;
-
-    @media only screen and (min-width: 768px) and (min-height: 768px) {
-      position: absolute;
-      top: calc(50% - (700px/2);
-      left: calc(50% - (700px/2);
-      width: 700px;
-      height: 700px;
-    }
-}
-
-.wrapper{
-  position: relative;
-  height: 100%;
-  z-index: 10;
-}
-
-.btn-container-wrapper{
-  position: absolute;
-  top: 0px;
-  left: 0px;
-  width: 100%;
-  height: 50px;
-}
-
-.btn-container{
-  float: right;
-}
-
 .yellow{
   color: #FBBC05;
 }
@@ -77,7 +37,6 @@ ion-list{
 
 .left-cell{
   position: absolute;
-  opacity: .5;
   height: 100%;
   width: 100%;
   top: 0;
@@ -86,20 +45,19 @@ ion-list{
 }
 
 .left-cell.disabled{
-  background-color: #777;
+  background-color: #DDD;
 }
 
 .left-cell.short{
-  background-color: #FF0000;
+  background-color: #63D863;
 }
 
 .left-cell.long{
-  background-color: #00FF00;
+  background-color: #EE540C;
 }
 
 .right-cell{
   position: absolute;
-  opacity: .5;
   height: 100%;
   width: 100%;
   top: 0;
@@ -108,13 +66,34 @@ ion-list{
 }
 
 .right-cell.disabled{
-  background-color: #777;
+  background-color: #DDD;
 }
 
 .right-cell.short{
-  background-color: #0000FF;
+  background-color: #FEDD56;
 }
 
 .right-cell.long{
-  background-color: #0F0F0F;
+  background-color: #D7A678;
+}
+
+.left-cell-inner, .right-cell-inner {
+  height: 100%;
+  display: flex;
+  align-items: center;
+}
+
+.left-cell-content, .right-cell-inner {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  color: #FFF;
+}
+
+.left-cell-content{
+    justify-content: flex-end;
+}
+
+.right-cell-inner {
+    justify-content: flex-start;
 }

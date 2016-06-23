@@ -29,3 +29,12 @@
 // App Material Design Only Sass
 // --------------------------------------------------
 // CSS that should only apply to the Material Design app
+
+.left-cell-label, .right-cell-label {
+  font-size: 16px;
+}
+
+.left-cell-icon, .right-cell-icon {
+  margin: 0px 20px 0px 20px;
+  font-size: 30px;
+}
