@@ -68,6 +68,7 @@ export class Email{
               public snoozed: boolean,
               public sender: string,
               public subject: string,
-              public body: string){
+              public body: string,
+              public favored:boolean = false){
   }
 }
