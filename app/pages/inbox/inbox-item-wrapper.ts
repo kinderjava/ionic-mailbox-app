@@ -1,8 +1,8 @@
-import {Component, ContentChild, ElementRef, EventEmitter, Input, Output, ViewChild} from "@angular/core";
-import {DragGestureRecognizerProvider} from "../../utils/gestures/drag-gesture-recognizer-provider";
-import {GestureDirection} from "../../utils/gestures/gesture-direction";
-
-import {Animation, Item} from "ionic-angular";
+import {Component, ContentChild, ElementRef, EventEmitter, Input, Output, ViewChild} from '@angular/core';
+import {Animation, Item} from 'ionic-angular';
+import {DragGestureRecognizerProvider} from '../../utils/gestures/drag-gesture-recognizer-provider';
+import {GestureDirection} from '../../utils/gestures/gesture-direction';
+import {ScrollDisabler} from '../../utils/scroll-disabler';
 
 @Component({
   selector: `inbox-item-wrapper`,
@@ -57,7 +57,7 @@ export class InboxItemWrapper{
 
   protected leftToRight:boolean;
 
-  constructor(protected dragGestureRecognizerProvider:DragGestureRecognizerProvider, protected elementRef:ElementRef) {
+  constructor(protected dragGestureRecognizerProvider: DragGestureRecognizerProvider, protected elementRef: ElementRef, protected scrollDisabler: ScrollDisabler) {
   }
 
   getContainerWidth() {
@@ -71,6 +71,7 @@ export class InboxItemWrapper{
     dragGesture.listen();
 
     let onPanStartSubscription = dragGesture.onPanStart.subscribe((event:HammerInput) => {
+      this.scrollDisabler.disableScroll();
       if ( event.direction === GestureDirection.LEFT ) {
         this.leftToRight = false;
       }
@@ -97,6 +98,7 @@ export class InboxItemWrapper{
       this.initialTouch = null;
       this.previousTouch = null;
       this.mostRecentTouch = null;
+      this.scrollDisabler.enableScroll();
     });
   }
 
@@ -165,13 +167,13 @@ export class InboxItemWrapper{
     if ( this.leftToRight ) {
       let currentPosition = this.previousTouch.x - this.getContainerWidth();
       let newPosition = this.getContainerWidth() * 2;
-      this.animateLeftCellOut(currentPosition, newPosition, event.velocityX, 350, 200, () => {
+      this.animateLeftCellOut(currentPosition, newPosition, event.velocityX, MAXIMUM_DURATION_SWIPE, MINIMUM_DURATION_SWIPE, () => {
         this.leftShortSwipe.emit({});
       });
     } else {
       let currentPosition = this.previousTouch.x;
       let newPosition = 0 - this.getContainerWidth();
-      this.animateRightCellOut(currentPosition, newPosition, event.velocityX, 350, 200, () => {
+      this.animateRightCellOut(currentPosition, newPosition, event.velocityX, MAXIMUM_DURATION_SWIPE, MINIMUM_DURATION_SWIPE, () => {
         this.rightShortSwipe.emit({});
       });
     }
@@ -181,13 +183,13 @@ export class InboxItemWrapper{
     if ( this.leftToRight ) {
       let currentPosition = this.previousTouch.x - this.getContainerWidth();
       let newPosition = this.getContainerWidth() * 2;
-      this.animateLeftCellOut(currentPosition, newPosition, event.velocityX, 350, 200, () => {
+      this.animateLeftCellOut(currentPosition, newPosition, event.velocityX, MAXIMUM_DURATION_SWIPE, MINIMUM_DURATION_SWIPE, () => {
         this.leftLongSwipe.emit({});
       });
     } else {
       let currentPosition = this.previousTouch.x;
       let newPosition = 0 - this.getContainerWidth();
-      this.animateRightCellOut(currentPosition, newPosition, event.velocityX, 350, 200, () => {
+      this.animateRightCellOut(currentPosition, newPosition, event.velocityX, MAXIMUM_DURATION_SWIPE, MINIMUM_DURATION_SWIPE, () => {
         this.rightLongSwipe.emit({});
       });
     }
@@ -288,7 +290,10 @@ export class InboxItemWrapper{
 }
 
 const INCOMPLETE_DRAG_PERCENTAGE = .10;
-const SHORT_DRAG_PERCENTAGE = .50;
+const SHORT_DRAG_PERCENTAGE = .40;
 
 const MAXIMUM_DURATION_RESET = 100;
 const MINIMUM_DURATION_RESET = 50;
+
+const MAXIMUM_DURATION_SWIPE = 250;
+const MINIMUM_DURATION_SWIPE = 200;

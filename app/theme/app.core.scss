@@ -23,6 +23,11 @@ ion-list{
   margin-bottom: 0px;
 }
 
+inbox-item-wrapper{
+  display: block;
+  transform-origin: top;
+}
+
 .item.activated{
   background-color: transparent;
 }

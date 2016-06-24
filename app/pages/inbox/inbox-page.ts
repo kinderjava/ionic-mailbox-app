@@ -1,4 +1,5 @@
-import {Component, ElementRef, ViewChild} from "@angular/core";
+import {Component, ContentChildren, ElementRef, QueryList, ViewChildren} from "@angular/core";
+import {App, Alert, Animation, NavController} from 'ionic-angular';
 
 import {EmailDataProvider} from "./email-data-provider";
 import {InboxItemWrapper} from "./inbox-item-wrapper";
@@ -30,17 +31,17 @@ import {InboxItemWrapper} from "./inbox-item-wrapper";
     </ion-buttons>
   </ion-navbar>
   <ion-content>
-    <ion-list #list>
-      <inbox-item-wrapper *ngFor="let email of emails; let i = index"
+    <ion-list>
+      <inbox-item-wrapper #instance *ngFor="let email of emails; let i = index"
         (click)="favorite(email)"
         leftIconShort="checkmark"
         leftIconLong="close"
         rightIconShort="time"
         rightIconLong="menu"
-        (leftShortSwipe)="onLeftShortSwipe()"
-        (leftLongSwipe)="onLeftLongSwipe()"
-        (rightShortSwipe)="onRightShortSwipe()"
-        (rightLongSwipe)="onRightLongSwipe()"
+        (leftShortSwipe)="archive(i)"
+        (leftLongSwipe)="delete(i)"
+        (rightShortSwipe)="snooze(i)"
+        (rightLongSwipe)="somethingElse(i)"
       >
         <button ion-item detail-none>
           <ion-icon ios="ios-star-outline" md="ios-star-outline" item-left *ngIf="!email.favorited" primary></ion-icon>
@@ -56,38 +57,89 @@ import {InboxItemWrapper} from "./inbox-item-wrapper";
 })
 export class InboxPage{
 
+  @ViewChildren('instance', {read: ElementRef}) itemWrappers: QueryList<ElementRef>;
+
   private selectedIndex:number = -1;
+
   emails: any[];
 
-  constructor(protected emailDataProvider:EmailDataProvider){
-  }
-
-  ionViewWillEnter(){
-    if ( ! this.emails ){
-        this.emails = this.emailDataProvider.getEmails();
-    }
-  }
-
-  ionViewDidEnter(){
+  constructor(private app: App, emailDataProvider:EmailDataProvider, private nav: NavController){
+    this.emails = emailDataProvider.getEmails();
   }
 
   favorite(email:any){
     email.favorited = !email.favorited;
   }
 
-  onLeftShortSwipe(){
-    console.log("onLeftShortSwipe received!");
+  archive(index: number){
+    console.log("archive received!");
   }
 
-  onLeftLongSwipe(){
-    console.log("onLeftLongSwipe received!");
+  ngAfterViewInit(){
+    console.log("ngAfterViewInit fired");
   }
 
-  onRightShortSwipe(){
-    console.log("onRightShortSwipe received!");
+  ionViewWillEnter(){
+    console.log("ionViewWillEnter fired");
   }
 
-  onRightLongSwipe(){
-    console.log("onRightLongSwipe received!");
+  delete(index: number){
+    let wrapperElements = this.itemWrappers.toArray();
+    if ( index >= 0 && index < wrapperElements.length ){
+      this.app.setEnabled(false);
+      // set up parent animation
+      let animation = new Animation(wrapperElements[index]);
+      animation.fromTo('scaleY', '1.0', '0.0');
+      animation.fromTo('opacity', '1.0', '0.1');
+      // grab all of the other elements, and animate them up
+      for ( let i = index + 1; i < wrapperElements.length; i++ ){
+        let childAnimation = new Animation(wrapperElements[i]);
+        childAnimation.fromTo('translateY', '0px', `-${wrapperElements[i].nativeElement.clientHeight}px`);
+        animation.add(childAnimation);
+      }
+
+      animation.easing('ease-in');
+      animation.duration(100);
+      animation.onFinish( () => {
+        setTimeout( () => {
+          this.resetAnimationAndRemoveItem(index);
+        }, 1);
+      });
+      animation.play();
+
+      animation.play();
+    }
+  }
+
+  resetAnimationAndRemoveItem(index:number){
+    // we need to undo the translations we just did, then remove the item from the list
+    let wrapperElements = this.itemWrappers.toArray();
+    if ( index >= 0 && index < wrapperElements.length ){
+      let animation = new Animation();
+      for ( let i = index + 1; i < wrapperElements.length; i++ ){
+        let childAnimation = new Animation(wrapperElements[i]);
+        childAnimation.fromTo('translateY', `-${wrapperElements[i].nativeElement.clientHeight}px`, '0px');
+        animation.add(childAnimation);
+      }
+      animation.onFinish(() => {
+          this.app.setEnabled(true);
+          this.emails.splice(index, 1);
+      });
+      animation.play();
+
+    }
+  }
+
+  snooze(index: number){
+    console.log("snooze received!");
+  }
+
+  somethingElse(index: number){
+    let alert = Alert.create({
+      title: 'Some Action',
+      subTitle: `w00t! You've taken an action!`,
+      buttons: ['OK']
+    });
+    this.nav.present(alert);
   }
 }

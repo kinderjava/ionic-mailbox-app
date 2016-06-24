@@ -8,6 +8,9 @@ import {TapGestureRecognizerProvider} from './utils/gestures/tap-gesture-recogni
 
 import {EmailDataProvider} from './pages/inbox/email-data-provider';
 
+import {ScrollDisabler} from './utils/scroll-disabler';
+import {WindowProvider} from './utils/window-provider';
+
 export function getProviders(){
     let providers = [];
 
@@ -20,6 +23,9 @@ export function getProviders(){
     providers.push(RotateGestureRecognizerProvider);
     providers.push(SwipeGestureRecognizerProvider);
     providers.push(TapGestureRecognizerProvider);
-    
+
+    providers.push(ScrollDisabler);
+    providers.push(WindowProvider);
+
     return providers;
 }

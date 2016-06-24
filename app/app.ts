@@ -2,7 +2,7 @@ import {Component} from '@angular/core';
 import {ionicBootstrap, Platform} from 'ionic-angular';
 import {StatusBar} from 'ionic-native';
 import {InboxPage} from './pages/inbox/inbox-page';
-import {getProviders} from "./AppFactory";
+import {getProviders} from "./app-factory";
 
 @Component({
   template: '<ion-nav [root]="rootPage"></ion-nav>',
