@@ -1,35 +1,30 @@
 import {Component, ContentChildren, ElementRef, QueryList, ViewChildren} from "@angular/core";
 import {App, Alert, Animation, NavController} from 'ionic-angular';
 
-import {EmailDataProvider} from "./email-data-provider";
+import {EmailDataProvider, Email} from "./email-data-provider";
 import {InboxItemWrapper} from "./inbox-item-wrapper";
 
 @Component({
   directives: [InboxItemWrapper],
   template:`
-  <ion-navbar *navbar>
-    <ion-segment primary padding>
-      <ion-segment-button value="snoozed">
+  <ion-toolbar no-border-bottom>
+    <ion-segment primary padding [(ngModel)]="activeSegment">
+      <ion-segment-button value="snoozed" class="small-seg-btn">
         <ion-icon name="time"></ion-icon>
       </ion-segment-button>
-      <ion-segment-button value="inbox">
+      <ion-segment-button value="inbox" class="small-seg-btn">
         <ion-icon name="mail"></ion-icon>
       </ion-segment-button>
-      <ion-segment-button value="archived">
+      <ion-segment-button value="archived" class="small-seg-btn">
         <ion-icon name="checkmark-circle"></ion-icon>
       </ion-segment-button>
     </ion-segment>
-    <ion-buttons start>
-      <button>
-          <ion-icon name="menu"></ion-icon>
-      </button>
-    </ion-buttons>
     <ion-buttons end>
       <button>
           <ion-icon ios="ios-create-outline" md="ios-create-outline"></ion-icon>
       </button>
     </ion-buttons>
-  </ion-navbar>
+  </ion-toolbar>
   <ion-content>
     <ion-list>
       <inbox-item-wrapper #instance *ngFor="let email of emails; let i = index"
@@ -61,10 +56,14 @@ export class InboxPage{
 
   private selectedIndex:number = -1;
 
-  emails: any[];
+  emails: Email[];
 
-  constructor(private app: App, emailDataProvider:EmailDataProvider, private nav: NavController){
-    this.emails = emailDataProvider.getEmails();
+  constructor(private app: App, private emailDataProvider:EmailDataProvider, private nav: NavController){
+    this.loadUnreadEmails();
+  }
+
+  loadUnreadEmails(){
+    this.emails = this.emailDataProvider.getUnreadEmails();
   }
 
   favorite(email:any){
@@ -75,14 +74,6 @@ export class InboxPage{
     console.log("archive received!");
   }
 
-  ngAfterViewInit(){
-    console.log("ngAfterViewInit fired");
-  }
-
-  ionViewWillEnter(){
-    console.log("ionViewWillEnter fired");
-  }
-
   delete(index: number){
     let wrapperElements = this.itemWrappers.toArray();
     if ( index >= 0 && index < wrapperElements.length ){
@@ -91,7 +82,7 @@ export class InboxPage{
       let animation = new Animation(wrapperElements[index]);
       animation.fromTo('scaleY', '1.0', '0.0');
       animation.fromTo('opacity', '1.0', '0.1');
-      // grab all of the other elements, and animate them up
+      // grab all of the other elements, and scoot them up
       for ( let i = index + 1; i < wrapperElements.length; i++ ){
         let childAnimation = new Animation(wrapperElements[i]);
         childAnimation.fromTo('translateY', '0px', `-${wrapperElements[i].nativeElement.clientHeight}px`);
@@ -101,11 +92,8 @@ export class InboxPage{
       animation.easing('ease-in');
       animation.duration(100);
       animation.onFinish( () => {
-        setTimeout( () => {
-          this.resetAnimationAndRemoveItem(index);
-        }, 1);
+        this.resetAnimationAndRemoveItem(index);
       });
-      animation.play();
 
       animation.play();
     }
@@ -123,10 +111,10 @@ export class InboxPage{
       }
       animation.onFinish(() => {
           this.app.setEnabled(true);
-          this.emails.splice(index, 1);
+          this.emailDataProvider.deleteEmail(this.emails[index]);
+          this.loadUnreadEmails();
       });
       animation.play();
-
     }
   }
 
