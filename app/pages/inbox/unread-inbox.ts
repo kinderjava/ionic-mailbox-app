@@ -1,15 +1,21 @@
 import {Component, ContentChildren, ElementRef, QueryList, ViewChildren} from "@angular/core";
+import {animate, state, style, trigger, transition} from '@angular/core';
 import {App, Alert, Animation, NavController} from 'ionic-angular';
 
 import {EmailDataProvider, Email} from "./email-data-provider";
 import {InboxItemWrapper} from "./inbox-item-wrapper";
+
+import {SnoozeViewController} from '../snooze/snooze-view-controller';
+
+const DELETE_ANIMATION_DURATION = 1000;
 
 @Component({
   selector: 'unread-inbox',
   directives: [InboxItemWrapper],
   template: `
   <ion-list>
-    <inbox-item-wrapper #instance *ngFor="let email of emails; let i = index"
+    <inbox-item-wrapper #instance
+      *ngFor="let email of emails; let i = index"
       (click)="favorite(email)"
       leftIconShort="checkmark"
       leftIconLong="close"
@@ -20,7 +26,7 @@ import {InboxItemWrapper} from "./inbox-item-wrapper";
       (rightShortSwipe)="snooze(i)"
       (rightLongSwipe)="somethingElse(i)"
     >
-      <button ion-item detail-none>
+      <button ion-item detail-none >
         <ion-icon ios="ios-star-outline" md="ios-star-outline" item-left *ngIf="!email.favorited" primary></ion-icon>
         <ion-icon class="yellow" ios="ios-star" md="ios-star" item-left *ngIf="email.favorited"></ion-icon>
         <p>{{email.sender}}</p>
@@ -43,7 +49,6 @@ export class UnreadInbox{
 
   loadUnreadEmails(){
     this.emails = this.emailDataProvider.getUnreadEmails();
-    console.log(this.emails);
   }
 
   favorite(email:any){
@@ -61,7 +66,8 @@ export class UnreadInbox{
   }
 
   snooze(index: number){
-    console.log("snooze received!");
+    let snoozeView = SnoozeViewController.create();
+    this.nav.present(snoozeView);
   }
 
   somethingElse(index: number){
@@ -72,5 +78,4 @@ export class UnreadInbox{
     });
     this.nav.present(alert);
   }
-
 }

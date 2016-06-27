@@ -4,6 +4,8 @@ import {StatusBar} from 'ionic-native';
 import {InboxPage} from './pages/inbox/inbox-page';
 import {getProviders} from "./app-factory";
 
+import {TRANSITION_IN_KEY, TRANSITION_OUT_KEY} from './pages/snooze/snooze-view-transition';
+
 @Component({
   template: '<ion-nav [root]="rootPage"></ion-nav>',
   providers: getProviders(),
@@ -19,5 +21,7 @@ export class MyApp {
 }
 
 ionicBootstrap(MyApp, null, {
+  snoozeViewEnter: TRANSITION_IN_KEY,
+  snoozeViewLeave: TRANSITION_OUT_KEY,
   prodMode: true
 })

@@ -21,7 +21,11 @@ export class EmailDataProvider {
     temp.push(new Email(false, false, false, `developer@apple.com`, `See what's next`, `The new beta of Xcode 8 is now available, and includes Swift 3 and SDK that you can use to build apps for the next version of macOS, iOS, watchOS, and tvOS.`));
     temp.push(new Email(false, false, false, `notifications@zillow.com`, `Zestimate has decreased. See details`, `The Zestimate for property 123 E. Main St has decreased to $248,715 based on recent sales in area`));
     temp.push(new Email(false, false, false, `annalyse.smith@gmail.com`, `Pics of Graham`, `Check out the little man gettin' splashy in the pool`));
-
+    temp.push(new Email(true, false, false, `service@paypal.com`, `Receipt for Your Payment to Netflix`, `June 12, 2016 06:54:43 PDT, Transaction ID: 123B4134123`));
+    temp.push(new Email(true, false, false, `service@paypal.com`, `Receipt for Your Payment to Hulu`, `June 11, 2016 04:18:17 PDT, Transaction ID: EG3BD139111`));
+    temp.push(new Email(true, false, false, `service@paypal.com`, `Receipt for Your Payment to Spotify`, `June 09, 2016 04:11:19 PDT, Transaction ID: M2QB6194F24`));
+    temp.push(new Email(false, false, true, `notifications@kohls.com`, `A friendly reminder`, `ACCOUNT SUMMARY: Account ending in 4223 has a balance due: $21.16`));
+    temp.push(new Email(false, false, true, `ashley.peters@gmail.com`, `July 4th`, `What are you guys planning on doing for the fourth?`));
     return temp;
   }
 
@@ -44,18 +48,21 @@ export class EmailDataProvider {
   }
 
   deleteEmail(email:Email){
+    email.state = 'deleted';
     email.deleted = true;
     email.snoozed = false;
     email.archived = false;
   }
 
   archiveEmail(email:Email){
+    email.state = 'archived';
     email.deleted = false;
     email.snoozed = false;
     email.archived = true;
   }
 
   snoozeEmail(email:Email){
+    email.state = 'snoozed';
     email.deleted = false;
     email.snoozed = true;
     email.archived = false;
@@ -63,12 +70,27 @@ export class EmailDataProvider {
 }
 
 export class Email{
+
+  public state: string;
   constructor(public archived: boolean,
               public deleted: boolean,
               public snoozed: boolean,
               public sender: string,
               public subject: string,
               public body: string,
-              public favored:boolean = false){
+              public favorited:boolean = false){
+
+    if ( archived ){
+      this.state = 'archived';
+    }
+    else if ( deleted ){
+      this.state = 'deleted';
+    }
+    else if ( snoozed ){
+      this.state = 'snoozed';
+    }
+    else{
+      this.state = 'unread';
+    }
   }
 }

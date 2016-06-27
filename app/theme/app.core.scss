@@ -7,40 +7,40 @@
 // By default each design mode includes these shared imports.
 // App Shared Sass variables belong in app.variables.scss.
 
-.inline-block{
+.inline-block {
     display: inline-block;
 }
 
-.show-cursor{
+.show-cursor {
     cursor: pointer;
 }
 
-.yellow{
+.yellow {
   color: #FBBC05;
 }
 
-ion-list{
+ion-list {
   margin-bottom: 0px;
 }
 
-inbox-item-wrapper{
+inbox-item-wrapper {
   display: block;
   transform-origin: top;
 }
 
-.item.activated{
+.item.activated {
   background-color: transparent;
 }
 
-inbox-item-wrapper, unread-inbox, archived-inbox{
+inbox-item-wrapper, unread-inbox, archived-inbox {
   display: block;
 }
 
-.item-wrapper{
+.item-wrapper {
   position: relative;
 }
 
-.left-cell{
+.left-cell {
   position: absolute;
   height: 100%;
   width: 100%;
@@ -49,19 +49,19 @@ inbox-item-wrapper, unread-inbox, archived-inbox{
   transform: translate3d(-100%, 0, 0);
 }
 
-.left-cell.disabled{
+.left-cell.disabled {
   background-color: #DDD;
 }
 
-.left-cell.short{
+.left-cell.short {
   background-color: #63D863;
 }
 
-.left-cell.long{
+.left-cell.long {
   background-color: #EE540C;
 }
 
-.right-cell{
+.right-cell {
   position: absolute;
   height: 100%;
   width: 100%;
@@ -70,11 +70,11 @@ inbox-item-wrapper, unread-inbox, archived-inbox{
   transform: translate3d(100%, 0, 0);
 }
 
-.right-cell.disabled{
+.right-cell.disabled {
   background-color: #DDD;
 }
 
-.right-cell.short{
+.right-cell.short {
   background-color: #FEDD56;
 }
 
@@ -95,7 +95,7 @@ inbox-item-wrapper, unread-inbox, archived-inbox{
   color: #FFF;
 }
 
-.left-cell-content{
+.left-cell-content {
     justify-content: flex-end;
 }
 
@@ -112,6 +112,39 @@ inbox-item-wrapper, unread-inbox, archived-inbox{
   font-size: 30px;
 }
 
-.toolbar .segment-button{
+.toolbar .segment-button {
   max-width: 70px;
+}
+
+ion-backdrop {
+  z-index: 0;
+}
+
+.wrapper {
+  position: relative;
+  height: 100%;
+  padding-top: 120px;
+  z-index: 10;
+}
+
+.snooze-label {
+  color: #FFFFFF;
+  text-align: center;
+}
+
+.snooze-btn {
+  height: 100px;
+  width: 100px;
+}
+
+.text-btn {
+  font-size: 24px;
+}
+
+.transparent{
+  background-color: transparent;
+}
+
+.transparent-header{
+  opacity: .92;
 }
