@@ -11,9 +11,12 @@ export class SnoozeSlideInTransition extends Transition {
     // DOM READS
     let ele = <HTMLElement> enteringView.pageRef().nativeElement;
     let backdrop = ele.querySelector('ion-backdrop');
+    let wrapper = ele.querySelector('.snooze-wrapper');
     let backdropAnimation = new Animation(backdrop);
+    let wrapperAnimation = new Animation(wrapper);
 
     backdropAnimation.fromTo('opacity', '0.01', '0.8');
+    wrapperAnimation.fromTo('translateX', `-100%`, `0%`);
 
     this
       .element(enteringView.pageRef())
@@ -21,6 +24,7 @@ export class SnoozeSlideInTransition extends Transition {
       .duration(300)
       .before.addClass('show-page')
       .add(backdropAnimation)
+      .add(wrapperAnimation);
   }
 }
 export class SnoozeSlideOutTransition extends Transition {
@@ -30,12 +34,18 @@ export class SnoozeSlideOutTransition extends Transition {
     // DOM reads
     let ele = leavingView.pageRef().nativeElement;
     let backdrop = ele.querySelector('ion-backdrop');
+    let wrapper = ele.querySelector('.snooze-wrapper');
     let backdropAnimation = new Animation(backdrop);
+    let wrapperAnimation = new Animation(wrapper);
 
     backdropAnimation.fromTo('opacity', `${backdrop.style.opacity}`, '0.01');
+    wrapperAnimation.fromTo('translateX', `0%`, `-100%`);
 
-    this.element(enteringView.pageRef()).easing('ease').duration(300)
+    this.element(leavingView.pageRef())
+      .easing('ease')
+      .duration(300)
       .add(backdropAnimation)
+      .add(wrapperAnimation);
   }
 }
 

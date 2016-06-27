@@ -1,14 +1,15 @@
 import {Component, ElementRef, ViewChild} from '@angular/core';
+import {ViewController} from 'ionic-angular';
 
 @Component({
   template: `
   <ion-content class="transparent">
     <ion-backdrop #backdrop></ion-backdrop>
-    <div class="wrapper" #wrapper>
+    <div class="snooze-wrapper" #wrapper>
       <ion-grid >
         <ion-row>
           <ion-col width-33 class="snooze-col" text-center #col>
-            <button round light outline class="snooze-btn">
+            <button round light outline class="snooze-btn" (click)="snooze()">
               <ion-icon name="alarm"></ion-icon>
             </button>
             <div class="snooze-label">
@@ -16,7 +17,7 @@ import {Component, ElementRef, ViewChild} from '@angular/core';
             </div>
           </ion-col>
           <ion-col width-33 class="snooze-col" text-center>
-            <button round light outline class="snooze-btn">
+            <button round light outline class="snooze-btn" (click)="snooze()">
               <ion-icon name="moon"></ion-icon>
             </button>
             <div class="snooze-label">
@@ -24,7 +25,7 @@ import {Component, ElementRef, ViewChild} from '@angular/core';
             </div>
           </ion-col>
           <ion-col width-33 class="snooze-col" text-center>
-            <button round light outline class="snooze-btn">
+            <button round light outline class="snooze-btn" (click)="snooze()">
               <ion-icon name="cafe"></ion-icon>
             </button>
             <div class="snooze-label">
@@ -34,7 +35,7 @@ import {Component, ElementRef, ViewChild} from '@angular/core';
         </ion-row>
         <ion-row>
           <ion-col width-33 class="snooze-col" text-center #col>
-            <button round light outline class="snooze-btn">
+            <button round light outline class="snooze-btn" (click)="snooze()">
               <ion-icon name="sunny"></ion-icon>
             </button>
             <div class="snooze-label">
@@ -42,7 +43,7 @@ import {Component, ElementRef, ViewChild} from '@angular/core';
             </div>
           </ion-col>
           <ion-col width-33 class="snooze-col" text-center>
-            <button round light outline class="snooze-btn">
+            <button round light outline class="snooze-btn" (click)="snooze()">
               <ion-icon name="briefcase"></ion-icon>
             </button>
             <div class="snooze-label">
@@ -50,7 +51,7 @@ import {Component, ElementRef, ViewChild} from '@angular/core';
             </div>
           </ion-col>
           <ion-col width-33 class="snooze-col" text-center>
-            <button round light outline class="snooze-btn">
+            <button round light outline class="snooze-btn" (click)="snooze()">
               <ion-icon name="calendar"></ion-icon>
             </button>
             <div class="snooze-label">
@@ -60,7 +61,7 @@ import {Component, ElementRef, ViewChild} from '@angular/core';
         </ion-row>
         <ion-row>
           <ion-col width-33 class="snooze-col" text-center #col>
-            <button round light outline class="snooze-btn">
+            <button round light outline class="snooze-btn" (click)="snooze()">
               <ion-icon name="rainy"></ion-icon>
             </button>
             <div class="snooze-label">
@@ -69,7 +70,7 @@ import {Component, ElementRef, ViewChild} from '@angular/core';
           </ion-col>
           <ion-col width-33></ion-col>
           <ion-col width-33 class="snooze-col" text-center>
-            <button round light outline class="snooze-btn text-btn">
+            <button round light outline class="snooze-btn text-btn" (click)="snooze()">
               08
             </button>
             <div class="snooze-label">
@@ -86,10 +87,10 @@ export class SnoozeView {
 
   @ViewChild('col', {read: ElementRef}) columnElement: ElementRef;
 
-  constructor() {
+  constructor(private viewController: ViewController) {
   }
 
-  getElementHeight(){
-    return this.columnElement.nativeElement.clientWidth + 'px';
+  snooze(){
+    this.viewController.dismiss();
   }
 }
