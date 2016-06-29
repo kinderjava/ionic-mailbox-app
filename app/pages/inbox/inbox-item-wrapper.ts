@@ -282,7 +282,6 @@ export class InboxItemWrapper{
   animateLeftCellOut(currentPosition:number, endPosition:number, velocity:number, maximumDurationInMillis:number, minimumDurationInMillis:number, callback: Function) {
     let distance = Math.abs(endPosition - currentPosition);
     let transitionTimeInMillis = Math.abs(Math.floor(distance/velocity));
-    console.log("Transition Time: ", transitionTimeInMillis);
     if ( transitionTimeInMillis > maximumDurationInMillis ) {
         transitionTimeInMillis = maximumDurationInMillis;
     }
@@ -349,7 +348,7 @@ export class InboxItemWrapper{
 }
 
 const INCOMPLETE_DRAG_PERCENTAGE = .10;
-const SHORT_DRAG_PERCENTAGE = .55;
+const SHORT_DRAG_PERCENTAGE = .45;
 
 const MAXIMUM_DURATION_RESET = 100;
 const MINIMUM_DURATION_RESET = 50;

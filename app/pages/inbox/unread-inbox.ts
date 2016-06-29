@@ -57,20 +57,26 @@ export class UnreadInbox{
   }
 
   archive(index: number){
-    this.emailDataProvider.archiveEmail(this.emails[index]);
-    this.loadUnreadEmails();
+    this.animateItemWrapperOut(index, () => {
+      this.emailDataProvider.archiveEmail(this.emails[index]);
+      this.loadUnreadEmails();
+    });
   }
 
   delete(index: number){
-    this.emailDataProvider.deleteEmail(this.emails[index]);
-    this.loadUnreadEmails();
+    this.animateItemWrapperOut(index, () => {
+      this.emailDataProvider.deleteEmail(this.emails[index]);
+      this.loadUnreadEmails();
+    });
   }
 
   snooze(index: number){
     let snoozeView = SnoozeViewController.create();
     snoozeView.onDismiss((data) => {
-      this.emailDataProvider.snoozeEmail(this.emails[index], data.snoozedUntilDate);
-      this.loadUnreadEmails();
+      this.animateItemWrapperOut(index, () => {
+        this.emailDataProvider.snoozeEmail(this.emails[index], data.snoozedUntilDate);
+        this.loadUnreadEmails();
+      });
     });
     this.nav.present(snoozeView);
   }
@@ -100,5 +106,16 @@ export class UnreadInbox{
     }
     animation.duration(transitionTimeInMillis);
     return animation;
+  }
+
+  animateItemWrapperOut(index: number, callback: () => any):void {
+    let array = this.itemWrappers.toArray();
+    let animation = new Animation(array[index].nativeElement);
+
+    animation.fromTo('height', `${array[index].nativeElement.clientHeight}px`, `${0}px`);
+
+    animation.duration(300);
+    animation.onFinish(callback);
+    animation.play();
   }
 }
