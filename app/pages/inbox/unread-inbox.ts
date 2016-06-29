@@ -21,6 +21,7 @@ const DELETE_ANIMATION_DURATION = 1000;
       leftIconLong="close"
       rightIconShort="time"
       rightIconLong="menu"
+      [overrideRightShortSwipeTransition]="overrideAnimation"
       (leftShortSwipe)="archive(i)"
       (leftLongSwipe)="delete(i)"
       (rightShortSwipe)="snooze(i)"
@@ -41,9 +42,9 @@ export class UnreadInbox{
 
   @ViewChildren('instance', {read: ElementRef}) itemWrappers: QueryList<ElementRef>;
 
-  emails: Email[];
+  private emails: Email[];
 
-  constructor(private app: App, private emailDataProvider:EmailDataProvider, private nav: NavController){
+  constructor(private app: App, private emailDataProvider: EmailDataProvider, private nav: NavController){
     this.loadUnreadEmails();
   }
 
@@ -67,15 +68,37 @@ export class UnreadInbox{
 
   snooze(index: number){
     let snoozeView = SnoozeViewController.create();
+    snoozeView.onDismiss((data) => {
+      this.emailDataProvider.snoozeEmail(this.emails[index], data.snoozedUntilDate);
+      this.loadUnreadEmails();
+    });
     this.nav.present(snoozeView);
   }
 
   somethingElse(index: number){
     let alert = Alert.create({
       title: 'Some Action',
-      subTitle: `w00t! You've taken an action!`,
+      subTitle: `w00t! You've taken an action! Try some other swipes!`,
       buttons: ['OK']
     });
     this.nav.present(alert);
+  }
+
+  overrideAnimation(elementRef: ElementRef, currentPosition: number, originalNewPosition: number, velocity: number): Animation{
+    let animation = new Animation(elementRef);
+    animation.fromTo('translateX', `${currentPosition}px`, `${0}px`);
+    animation.before.addClass("short");
+    animation.before.removeClass("disabled");
+    animation.before.removeClass("long");
+    let distance = Math.abs(0 - currentPosition);
+    let transitionTimeInMillis = Math.abs(Math.floor(distance/velocity));
+    if ( transitionTimeInMillis > 60 ) {
+        transitionTimeInMillis = 60;
+    }
+    if ( transitionTimeInMillis < 30 ) {
+      transitionTimeInMillis = 30;
+    }
+    animation.duration(transitionTimeInMillis);
+    return animation;
   }
 }

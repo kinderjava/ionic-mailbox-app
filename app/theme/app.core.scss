@@ -7,6 +7,8 @@
 // By default each design mode includes these shared imports.
 // App Shared Sass variables belong in app.variables.scss.
 
+@import 'app.variables';
+
 .inline-block {
     display: inline-block;
 }
@@ -121,10 +123,10 @@ ion-backdrop {
 }
 
 .snooze-wrapper {
-  position: relative;
   height: 100%;
-  padding-top: 120px;
   z-index: 10;
+  display: flex;
+  align-items: center;
 
   transform: translate3d(-100%, 0, 0);
 }
@@ -143,10 +145,18 @@ ion-backdrop {
   font-size: 24px;
 }
 
-.transparent{
+.transparent {
   background-color: transparent;
 }
 
-.transparent-header{
+.transparent-header {
   opacity: .92;
+}
+
+.snooze-color {
+  color: color($colors, primary) !important;
+}
+
+.snoozed-small-icon {
+  margin-right: 5px;
 }

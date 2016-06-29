@@ -40,6 +40,11 @@ export class InboxItemWrapper{
   @Input() rightIconShort: string;
   @Input() rightIconLong: string;
 
+  @Input() overrideLeftShortSwipeTransition: (elementRef: ElementRef, currentPosition: number, originalNewPosition: number, velocity: number, maxSwipeDuration: number, minSwipeDuration: number) => Animation;
+  @Input() overrideLeftLongSwipeTransition: (elementRef: ElementRef, currentPosition: number, originalNewPosition: number, velocity: number, maxSwipeDuration: number, minSwipeDuration: number) => Animation;
+  @Input() overrideRightShortSwipeTransition: (elementRef: ElementRef, currentPosition: number, originalNewPosition: number, velocity: number, maxSwipeDuration: number, minSwipeDuration: number) => Animation;
+  @Input() overrideRightLongSwipeTransition: (elementRef: ElementRef, currentPosition: number, originalNewPosition: number, velocity: number, maxSwipeDuration: number, minSwipeDuration: number) => Animation;
+
   @Output() leftShortSwipe: EventEmitter<any> = new EventEmitter();
   @Output() leftLongSwipe: EventEmitter<any> = new EventEmitter();
   @Output() rightShortSwipe: EventEmitter<any> = new EventEmitter();
@@ -67,7 +72,7 @@ export class InboxItemWrapper{
   ngAfterViewInit() {
     let previousTimestamp = 0
     let currentTimestamp = 0;
-    let dragGesture = this.dragGestureRecognizerProvider.getGestureRecognizer(this.wrapperEleRef, {threshold: 25, direction: GestureDirection.HORIZONTAL});
+    let dragGesture = this.dragGestureRecognizerProvider.getGestureRecognizer(this.wrapperEleRef, {threshold: 15, direction: GestureDirection.HORIZONTAL});
     dragGesture.listen();
 
     let onPanStartSubscription = dragGesture.onPanStart.subscribe((event:HammerInput) => {
@@ -155,11 +160,15 @@ export class InboxItemWrapper{
     if ( this.leftToRight ) {
       let currentPosition = this.previousTouch.x - this.getContainerWidth();
       let newPosition = 0 - this.getContainerWidth();
-      this.animateLeftCellOut(currentPosition, newPosition, event.velocityX, MAXIMUM_DURATION_RESET, MINIMUM_DURATION_RESET, null);
+      this.animateLeftCellOut(currentPosition, newPosition, event.velocityX, MAXIMUM_DURATION_RESET, MINIMUM_DURATION_RESET, () => {
+        this.removeAnimationClasses(this.leftCellRef);
+      });
     } else {
       let currentPosition = this.previousTouch.x;
       let newPosition = this.getContainerWidth();
-      this.animateRightCellOut(currentPosition, newPosition, event.velocityX, MAXIMUM_DURATION_RESET, MINIMUM_DURATION_RESET, null);
+      this.animateRightCellOut(currentPosition, newPosition, event.velocityX, MAXIMUM_DURATION_RESET, MINIMUM_DURATION_RESET, () => {
+        this.removeAnimationClasses(this.rightCellRef);
+      });
     }
   }
 
@@ -167,15 +176,36 @@ export class InboxItemWrapper{
     if ( this.leftToRight ) {
       let currentPosition = this.previousTouch.x - this.getContainerWidth();
       let newPosition = this.getContainerWidth() * 2;
-      this.animateLeftCellOut(currentPosition, newPosition, event.velocityX, MAXIMUM_DURATION_SWIPE, MINIMUM_DURATION_SWIPE, () => {
-        this.leftShortSwipe.emit({});
-      });
+      if ( this.overrideLeftShortSwipeTransition ) {
+        let animation = this.overrideLeftShortSwipeTransition(this.leftCellRef, currentPosition, newPosition, event.velocityX, MAXIMUM_DURATION_SWIPE, MINIMUM_DURATION_SWIPE);
+        animation.onFinish(() => {
+          this.leftShortSwipe.emit({});
+          //this.removeAnimationClasses(this.leftCellRef);
+        });
+        animation.play();
+      } else{
+        this.animateLeftCellOut(currentPosition, newPosition, event.velocityX, MAXIMUM_DURATION_SWIPE, MINIMUM_DURATION_SWIPE, () => {
+          this.leftShortSwipe.emit({});
+          this.removeAnimationClasses(this.leftCellRef);
+        });
+      }
     } else {
       let currentPosition = this.previousTouch.x;
       let newPosition = 0 - this.getContainerWidth();
-      this.animateRightCellOut(currentPosition, newPosition, event.velocityX, MAXIMUM_DURATION_SWIPE, MINIMUM_DURATION_SWIPE, () => {
-        this.rightShortSwipe.emit({});
-      });
+      if ( this.overrideRightShortSwipeTransition ) {
+        let animation = this.overrideRightShortSwipeTransition(this.rightCellRef, currentPosition, newPosition, event.velocityX, MAXIMUM_DURATION_SWIPE, MINIMUM_DURATION_SWIPE);
+        animation.onFinish(() => {
+          console.log("Animation Done: ", Date.now());
+          this.rightShortSwipe.emit({});
+          //this.removeAnimationClasses(this.rightCellRef);
+        });
+        animation.play();
+      } else{
+        this.animateRightCellOut(currentPosition, newPosition, event.velocityX, MAXIMUM_DURATION_SWIPE, MINIMUM_DURATION_SWIPE, () => {
+          this.rightShortSwipe.emit({});
+          this.removeAnimationClasses(this.rightCellRef);
+        });
+      }
     }
   }
 
@@ -183,15 +213,35 @@ export class InboxItemWrapper{
     if ( this.leftToRight ) {
       let currentPosition = this.previousTouch.x - this.getContainerWidth();
       let newPosition = this.getContainerWidth() * 2;
-      this.animateLeftCellOut(currentPosition, newPosition, event.velocityX, MAXIMUM_DURATION_SWIPE, MINIMUM_DURATION_SWIPE, () => {
-        this.leftLongSwipe.emit({});
-      });
+      if ( this.overrideLeftLongSwipeTransition ) {
+        let animation = this.overrideLeftLongSwipeTransition(this.leftCellRef, currentPosition, newPosition, event.velocityX, MAXIMUM_DURATION_SWIPE, MINIMUM_DURATION_SWIPE);
+        animation.onFinish(() => {
+          this.leftLongSwipe.emit({});
+          //this.removeAnimationClasses(this.leftCellRef);
+        });
+        animation.play();
+      } else {
+        this.animateLeftCellOut(currentPosition, newPosition, event.velocityX, MAXIMUM_DURATION_SWIPE, MINIMUM_DURATION_SWIPE, () => {
+          this.leftLongSwipe.emit({});
+          this.removeAnimationClasses(this.leftCellRef);
+        });
+      }
     } else {
       let currentPosition = this.previousTouch.x;
       let newPosition = 0 - this.getContainerWidth();
-      this.animateRightCellOut(currentPosition, newPosition, event.velocityX, MAXIMUM_DURATION_SWIPE, MINIMUM_DURATION_SWIPE, () => {
-        this.rightLongSwipe.emit({});
-      });
+      if ( this.overrideRightLongSwipeTransition ) {
+        let animation = this.overrideRightLongSwipeTransition(this.rightCellRef, currentPosition, newPosition, event.velocityX, MAXIMUM_DURATION_SWIPE, MINIMUM_DURATION_SWIPE);
+        animation.onFinish(() => {
+          this.rightLongSwipe.emit({});
+          //this.removeAnimationClasses(this.rightCellRef);
+        });
+        animation.play();
+      } else {
+        this.animateRightCellOut(currentPosition, newPosition, event.velocityX, MAXIMUM_DURATION_SWIPE, MINIMUM_DURATION_SWIPE, () => {
+          this.rightLongSwipe.emit({});
+          this.removeAnimationClasses(this.rightCellRef);
+        });
+      }
     }
   }
 
@@ -210,6 +260,7 @@ export class InboxItemWrapper{
   animateLeftCellIn(currentPosition:number, newPosition:number) {
     let animation = new Animation(this.leftCellRef.nativeElement, {renderDelay: 0});
     animation.fromTo('translateX', `${currentPosition}px`, `${newPosition}px`);
+    animation.before.addClass("active");
     if ( this.percentageDragged < INCOMPLETE_DRAG_PERCENTAGE ) {
       animation.before.addClass("disabled");
       animation.before.removeClass("short");
@@ -231,7 +282,7 @@ export class InboxItemWrapper{
   animateLeftCellOut(currentPosition:number, endPosition:number, velocity:number, maximumDurationInMillis:number, minimumDurationInMillis:number, callback: Function) {
     let distance = Math.abs(endPosition - currentPosition);
     let transitionTimeInMillis = Math.abs(Math.floor(distance/velocity));
-    //console.log("Transition Time: ", transitionTimeInMillis);
+    console.log("Transition Time: ", transitionTimeInMillis);
     if ( transitionTimeInMillis > maximumDurationInMillis ) {
         transitionTimeInMillis = maximumDurationInMillis;
     }
@@ -251,6 +302,7 @@ export class InboxItemWrapper{
   animateRightCellIn(currentPosition:number, newPosition:number) {
     let animation = new Animation(this.rightCellRef.nativeElement, {renderDelay: 0});
     animation.fromTo('translateX', `${currentPosition}px`, `${newPosition}px`);
+    animation.before.addClass("active");
     if ( this.percentageDragged < INCOMPLETE_DRAG_PERCENTAGE ) {
       animation.before.addClass("disabled");
       animation.before.removeClass("short");
@@ -287,13 +339,20 @@ export class InboxItemWrapper{
     }
     animation.play();
   }
+
+  removeAnimationClasses(elementRef: ElementRef){
+    (<HTMLElement> elementRef.nativeElement).classList.remove('disabled');
+    (<HTMLElement> elementRef.nativeElement).classList.remove('long');
+    (<HTMLElement> elementRef.nativeElement).classList.remove('short');
+    (<HTMLElement> elementRef.nativeElement).classList.remove('active');
+  }
 }
 
 const INCOMPLETE_DRAG_PERCENTAGE = .10;
-const SHORT_DRAG_PERCENTAGE = .40;
+const SHORT_DRAG_PERCENTAGE = .55;
 
 const MAXIMUM_DURATION_RESET = 100;
 const MINIMUM_DURATION_RESET = 50;
 
-const MAXIMUM_DURATION_SWIPE = 250;
-const MINIMUM_DURATION_SWIPE = 200;
+const MAXIMUM_DURATION_SWIPE = 300;
+const MINIMUM_DURATION_SWIPE = 250;

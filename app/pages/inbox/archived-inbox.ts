@@ -27,7 +27,6 @@ export class ArchivedInbox{
 
   loadArchivedEmails(){
     this.emails = this.emailDataProvider.getArchivedEmails();
-    console.log("emails: ", this.emails);
   }
 
   favorite(email:Email){
