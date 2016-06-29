@@ -1,6 +1,6 @@
 import {Component, ContentChildren, ElementRef, Input, QueryList, ViewChildren} from "@angular/core";
 import {animate, state, style, trigger, transition} from '@angular/core';
-import {App, Alert, Animation, NavController} from 'ionic-angular';
+import {App, AlertController, Animation, NavController} from 'ionic-angular';
 
 import {EmailDataProvider, Email} from "./email-data-provider";
 import {InboxItemWrapper} from "./inbox-item-wrapper";
@@ -44,7 +44,7 @@ export class UnreadInbox{
 
   private emails: Email[];
 
-  constructor(private app: App, private emailDataProvider: EmailDataProvider, private nav: NavController){
+  constructor(private alertController: AlertController, private app: App, private emailDataProvider: EmailDataProvider, private nav: NavController){
     this.loadUnreadEmails();
   }
 
@@ -82,16 +82,16 @@ export class UnreadInbox{
         this.loadUnreadEmails();
       });
     });
-    this.nav.present(snoozeView);
+    snoozeView.present(snoozeView);
   }
 
   somethingElse(index: number){
-    let alert = Alert.create({
+    let alert = this.alertController.create({
       title: 'Some Action',
       subTitle: `w00t! You've taken an action! Try some other swipes!`,
       buttons: ['OK']
     });
-    this.nav.present(alert);
+    alert.present();
   }
 
   overrideAnimation(elementRef: ElementRef, currentPosition: number, originalNewPosition: number, maximumAchievedVelocity: number, minSuggestedVelocity: number): Animation{

@@ -53,6 +53,5 @@ export class InboxPage{
 
   toggleReorder(value:boolean){
     this.reorderEnabled = value;
-    console.log("value: ", this.reorderEnabled);
   }
 }

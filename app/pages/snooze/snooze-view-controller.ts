@@ -1,14 +1,13 @@
-import {ViewController} from 'ionic-angular';
+import {App, NavOptions, ViewController} from 'ionic-angular';
 import {SnoozeView} from './snooze-view';
 
 export class SnoozeViewController extends ViewController {
 
   public isAlreadyDismissed: boolean;
 
-  constructor(opts: any = {}) {
+  constructor(private app: App, opts: any = {}) {
     super(SnoozeView, opts);
     this.isOverlay = true;
-    this.usePortal = true;
 
     this.fireOtherLifecycles = true;
   }
@@ -20,5 +19,9 @@ export class SnoozeViewController extends ViewController {
 
   static create(opts: any = {}) {
     return new SnoozeViewController(opts);
+  }
+
+  present(opts: NavOptions = {}){
+    return this.app.present(this, opts);
   }
 }
