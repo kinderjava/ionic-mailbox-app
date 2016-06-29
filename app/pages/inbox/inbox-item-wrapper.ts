@@ -40,10 +40,10 @@ export class InboxItemWrapper{
   @Input() rightIconShort: string;
   @Input() rightIconLong: string;
 
-  @Input() overrideLeftShortSwipeTransition: (elementRef: ElementRef, currentPosition: number, originalNewPosition: number, velocity: number, maxSwipeDuration: number, minSwipeDuration: number) => Animation;
-  @Input() overrideLeftLongSwipeTransition: (elementRef: ElementRef, currentPosition: number, originalNewPosition: number, velocity: number, maxSwipeDuration: number, minSwipeDuration: number) => Animation;
-  @Input() overrideRightShortSwipeTransition: (elementRef: ElementRef, currentPosition: number, originalNewPosition: number, velocity: number, maxSwipeDuration: number, minSwipeDuration: number) => Animation;
-  @Input() overrideRightLongSwipeTransition: (elementRef: ElementRef, currentPosition: number, originalNewPosition: number, velocity: number, maxSwipeDuration: number, minSwipeDuration: number) => Animation;
+  @Input() overrideLeftShortSwipeTransition: (elementRef: ElementRef, currentPosition: number, originalNewPosition: number, maximumAchievedVelocity: number, minSuggestedVelocity: number) => Animation;
+  @Input() overrideLeftLongSwipeTransition: (elementRef: ElementRef, currentPosition: number, originalNewPosition: number, maximumAchievedVelocity: number, minSuggestedVelocity: number) => Animation;
+  @Input() overrideRightShortSwipeTransition: (elementRef: ElementRef, currentPosition: number, originalNewPosition: number, maximumAchievedVelocity: number, minSuggestedVelocity: number) => Animation;
+  @Input() overrideRightLongSwipeTransition: (elementRef: ElementRef, currentPosition: number, originalNewPosition: number, maximumAchievedVelocity: number, minSuggestedVelocity: number) => Animation;
 
   @Output() leftShortSwipe: EventEmitter<any> = new EventEmitter();
   @Output() leftLongSwipe: EventEmitter<any> = new EventEmitter();
@@ -59,6 +59,7 @@ export class InboxItemWrapper{
   protected previousTouch: HammerPoint;
   protected mostRecentTouch: HammerPoint;
   protected percentageDragged: number;
+  protected maximumAchievedVelocity: number = 0;
 
   protected leftToRight:boolean;
 
@@ -77,6 +78,7 @@ export class InboxItemWrapper{
 
     let onPanStartSubscription = dragGesture.onPanStart.subscribe((event:HammerInput) => {
       this.scrollDisabler.disableScroll();
+      this.maximumAchievedVelocity = event.velocityX;
       if ( event.direction === GestureDirection.LEFT ) {
         this.leftToRight = false;
       }
@@ -87,6 +89,9 @@ export class InboxItemWrapper{
     });
 
     let onPanMoveSubscription = dragGesture.onPanMove.subscribe((event:HammerInput) => {
+      if ( event.velocityX > this.maximumAchievedVelocity ){
+        this.maximumAchievedVelocity = event.velocityX;
+      }
       this.handleDrag(event);
     });
 
@@ -160,13 +165,13 @@ export class InboxItemWrapper{
     if ( this.leftToRight ) {
       let currentPosition = this.previousTouch.x - this.getContainerWidth();
       let newPosition = 0 - this.getContainerWidth();
-      this.animateLeftCellOut(currentPosition, newPosition, event.velocityX, MAXIMUM_DURATION_RESET, MINIMUM_DURATION_RESET, () => {
+      this.animateLeftCellOut(currentPosition, newPosition, this.maximumAchievedVelocity, SUGGESTED_VELOCITY, () => {
         this.removeAnimationClasses(this.leftCellRef);
       });
     } else {
       let currentPosition = this.previousTouch.x;
       let newPosition = this.getContainerWidth();
-      this.animateRightCellOut(currentPosition, newPosition, event.velocityX, MAXIMUM_DURATION_RESET, MINIMUM_DURATION_RESET, () => {
+      this.animateRightCellOut(currentPosition, newPosition, this.maximumAchievedVelocity, SUGGESTED_VELOCITY, () => {
         this.removeAnimationClasses(this.rightCellRef);
       });
     }
@@ -177,14 +182,13 @@ export class InboxItemWrapper{
       let currentPosition = this.previousTouch.x - this.getContainerWidth();
       let newPosition = this.getContainerWidth() * 2;
       if ( this.overrideLeftShortSwipeTransition ) {
-        let animation = this.overrideLeftShortSwipeTransition(this.leftCellRef, currentPosition, newPosition, event.velocityX, MAXIMUM_DURATION_SWIPE, MINIMUM_DURATION_SWIPE);
-        animation.onFinish(() => {
+        let animation = this.overrideLeftShortSwipeTransition(this.leftCellRef, currentPosition, newPosition, this.maximumAchievedVelocity, SUGGESTED_VELOCITY);
+        animation.onFinish( () => {
           this.leftShortSwipe.emit({});
-          //this.removeAnimationClasses(this.leftCellRef);
         });
         animation.play();
       } else{
-        this.animateLeftCellOut(currentPosition, newPosition, event.velocityX, MAXIMUM_DURATION_SWIPE, MINIMUM_DURATION_SWIPE, () => {
+        this.animateLeftCellOut(currentPosition, newPosition, this.maximumAchievedVelocity, SUGGESTED_VELOCITY, () => {
           this.leftShortSwipe.emit({});
           this.removeAnimationClasses(this.leftCellRef);
         });
@@ -193,15 +197,13 @@ export class InboxItemWrapper{
       let currentPosition = this.previousTouch.x;
       let newPosition = 0 - this.getContainerWidth();
       if ( this.overrideRightShortSwipeTransition ) {
-        let animation = this.overrideRightShortSwipeTransition(this.rightCellRef, currentPosition, newPosition, event.velocityX, MAXIMUM_DURATION_SWIPE, MINIMUM_DURATION_SWIPE);
-        animation.onFinish(() => {
-          console.log("Animation Done: ", Date.now());
+        let animation = this.overrideRightShortSwipeTransition(this.rightCellRef, currentPosition, newPosition, this.maximumAchievedVelocity, SUGGESTED_VELOCITY);
+        animation.onFinish( () => {
           this.rightShortSwipe.emit({});
-          //this.removeAnimationClasses(this.rightCellRef);
         });
         animation.play();
       } else{
-        this.animateRightCellOut(currentPosition, newPosition, event.velocityX, MAXIMUM_DURATION_SWIPE, MINIMUM_DURATION_SWIPE, () => {
+        this.animateRightCellOut(currentPosition, newPosition, this.maximumAchievedVelocity, SUGGESTED_VELOCITY, () => {
           this.rightShortSwipe.emit({});
           this.removeAnimationClasses(this.rightCellRef);
         });
@@ -214,14 +216,13 @@ export class InboxItemWrapper{
       let currentPosition = this.previousTouch.x - this.getContainerWidth();
       let newPosition = this.getContainerWidth() * 2;
       if ( this.overrideLeftLongSwipeTransition ) {
-        let animation = this.overrideLeftLongSwipeTransition(this.leftCellRef, currentPosition, newPosition, event.velocityX, MAXIMUM_DURATION_SWIPE, MINIMUM_DURATION_SWIPE);
-        animation.onFinish(() => {
+        let animation = this.overrideLeftLongSwipeTransition(this.leftCellRef, currentPosition, newPosition, this.maximumAchievedVelocity, SUGGESTED_VELOCITY);
+        animation.onFinish( () => {
           this.leftLongSwipe.emit({});
-          //this.removeAnimationClasses(this.leftCellRef);
         });
         animation.play();
       } else {
-        this.animateLeftCellOut(currentPosition, newPosition, event.velocityX, MAXIMUM_DURATION_SWIPE, MINIMUM_DURATION_SWIPE, () => {
+        this.animateLeftCellOut(currentPosition, newPosition, this.maximumAchievedVelocity, SUGGESTED_VELOCITY, () => {
           this.leftLongSwipe.emit({});
           this.removeAnimationClasses(this.leftCellRef);
         });
@@ -230,14 +231,13 @@ export class InboxItemWrapper{
       let currentPosition = this.previousTouch.x;
       let newPosition = 0 - this.getContainerWidth();
       if ( this.overrideRightLongSwipeTransition ) {
-        let animation = this.overrideRightLongSwipeTransition(this.rightCellRef, currentPosition, newPosition, event.velocityX, MAXIMUM_DURATION_SWIPE, MINIMUM_DURATION_SWIPE);
-        animation.onFinish(() => {
-          this.rightLongSwipe.emit({});
-          //this.removeAnimationClasses(this.rightCellRef);
+        let animation = this.overrideRightLongSwipeTransition(this.rightCellRef, currentPosition, newPosition, this.maximumAchievedVelocity, SUGGESTED_VELOCITY);
+        animation.onFinish( () => {
+          this.rightShortSwipe.emit({});
         });
         animation.play();
       } else {
-        this.animateRightCellOut(currentPosition, newPosition, event.velocityX, MAXIMUM_DURATION_SWIPE, MINIMUM_DURATION_SWIPE, () => {
+        this.animateRightCellOut(currentPosition, newPosition, this.maximumAchievedVelocity, SUGGESTED_VELOCITY, () => {
           this.rightLongSwipe.emit({});
           this.removeAnimationClasses(this.rightCellRef);
         });
@@ -279,19 +279,14 @@ export class InboxItemWrapper{
     animation.play();
   }
 
-  animateLeftCellOut(currentPosition:number, endPosition:number, velocity:number, maximumDurationInMillis:number, minimumDurationInMillis:number, callback: Function) {
+  animateLeftCellOut(currentPosition: number, endPosition: number, maximumAchievedVelocity: number, suggestedVelocity: number, callback: Function) {
     let distance = Math.abs(endPosition - currentPosition);
+    let velocity = Math.max(Math.abs(maximumAchievedVelocity), suggestedVelocity);
     let transitionTimeInMillis = Math.abs(Math.floor(distance/velocity));
-    if ( transitionTimeInMillis > maximumDurationInMillis ) {
-        transitionTimeInMillis = maximumDurationInMillis;
-    }
-    if ( transitionTimeInMillis < minimumDurationInMillis ) {
-      transitionTimeInMillis = minimumDurationInMillis;
-    }
     let animation = new Animation(this.leftCellRef.nativeElement, {renderDelay: 0});
     animation.fromTo('translateX', `${currentPosition}px`, `${endPosition}px`);
     animation.duration(transitionTimeInMillis);
-    animation.easing("ease-in");
+    animation.easing("ease");
     if ( callback ) {
       animation.onFinish(callback);
     }
@@ -320,19 +315,14 @@ export class InboxItemWrapper{
     animation.play();
   }
 
-  animateRightCellOut(currentPosition:number, endPosition:number, velocity:number, maximumDurationInMillis:number, minimumDurationInMillis:number, callback: Function) {
+  animateRightCellOut(currentPosition: number, endPosition: number, maximumAchievedVelocity: number, suggestedVelocity: number, callback: Function) {
     let distance = Math.abs(endPosition - currentPosition);
+    let velocity = Math.max(Math.abs(maximumAchievedVelocity), suggestedVelocity);
     let transitionTimeInMillis = Math.abs(Math.floor(distance/velocity));
-    if ( transitionTimeInMillis > maximumDurationInMillis ) {
-        transitionTimeInMillis = maximumDurationInMillis;
-    }
-    if ( transitionTimeInMillis < minimumDurationInMillis ) {
-      transitionTimeInMillis = minimumDurationInMillis;
-    }
     let animation = new Animation(this.rightCellRef.nativeElement, {renderDelay: 0});
     animation.fromTo('translateX', `${currentPosition}px`, `${endPosition}px`);
     animation.duration(transitionTimeInMillis);
-    animation.easing("ease-in");
+    animation.easing("ease");
     if ( callback ) {
       animation.onFinish(callback);
     }
@@ -347,11 +337,7 @@ export class InboxItemWrapper{
   }
 }
 
-const INCOMPLETE_DRAG_PERCENTAGE = .10;
+const INCOMPLETE_DRAG_PERCENTAGE = .15;
 const SHORT_DRAG_PERCENTAGE = .45;
 
-const MAXIMUM_DURATION_RESET = 100;
-const MINIMUM_DURATION_RESET = 50;
-
-const MAXIMUM_DURATION_SWIPE = 300;
-const MINIMUM_DURATION_SWIPE = 250;
+export const SUGGESTED_VELOCITY = 1.5;

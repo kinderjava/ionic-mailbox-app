@@ -1,6 +1,8 @@
 import {ElementRef} from '@angular/core';
 import {Animation, Transition, TransitionOptions, ViewController} from 'ionic-angular';
 
+import {SUGGESTED_VELOCITY} from '../inbox/inbox-item-wrapper';
+
 export const TRANSITION_IN_KEY: string = 'snoozeViewEnter';
 export const TRANSITION_OUT_KEY: string = 'snoozeViewLeave';
 
@@ -21,7 +23,7 @@ export class SnoozeSlideInTransition extends Transition {
     this
       .element(enteringView.pageRef())
       .easing('ease')
-      .duration(200)
+      .duration(250)
       .before.addClass('show-page')
       .add(backdropAnimation)
       .add(wrapperAnimation);
@@ -48,14 +50,15 @@ export class SnoozeSlideOutTransition extends Transition {
     swipeAnimation.after.removeClass('active');
     swipeAnimation.after.removeClass('short');
 
+    let distance = wrapper.clientWidth;
+    let duration = distance/SUGGESTED_VELOCITY;
+
     this.element(leavingView.pageRef())
       .easing('ease')
-      .duration(250)
+      .duration(duration)
       .add(backdropAnimation)
       .add(wrapperAnimation)
       .add(swipeAnimation);
-
-
   }
 }
 

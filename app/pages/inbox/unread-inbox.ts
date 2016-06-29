@@ -7,8 +7,6 @@ import {InboxItemWrapper} from "./inbox-item-wrapper";
 
 import {SnoozeViewController} from '../snooze/snooze-view-controller';
 
-const DELETE_ANIMATION_DURATION = 1000;
-
 @Component({
   selector: 'unread-inbox',
   directives: [InboxItemWrapper],
@@ -90,32 +88,28 @@ export class UnreadInbox{
     this.nav.present(alert);
   }
 
-  overrideAnimation(elementRef: ElementRef, currentPosition: number, originalNewPosition: number, velocity: number): Animation{
-    let animation = new Animation(elementRef);
+  overrideAnimation(elementRef: ElementRef, currentPosition: number, originalNewPosition: number, maximumAchievedVelocity: number, minSuggestedVelocity: number): Animation{
+    let velocity = Math.max(Math.abs(maximumAchievedVelocity), minSuggestedVelocity);
+    let transitionTimeInMillis = Math.abs(Math.floor(currentPosition/velocity));
+    let animation = new Animation(elementRef,  {renderDelay: 0});
     animation.fromTo('translateX', `${currentPosition}px`, `${0}px`);
     animation.before.addClass("short");
     animation.before.removeClass("disabled");
     animation.before.removeClass("long");
-    let distance = Math.abs(0 - currentPosition);
-    let transitionTimeInMillis = Math.abs(Math.floor(distance/velocity));
-    if ( transitionTimeInMillis > 60 ) {
-        transitionTimeInMillis = 60;
-    }
-    if ( transitionTimeInMillis < 30 ) {
-      transitionTimeInMillis = 30;
-    }
     animation.duration(transitionTimeInMillis);
     return animation;
   }
 
   animateItemWrapperOut(index: number, callback: () => any):void {
     let array = this.itemWrappers.toArray();
-    let animation = new Animation(array[index].nativeElement);
+    let animation = new Animation(array[index].nativeElement, {renderDelay: 0});
 
     animation.fromTo('height', `${array[index].nativeElement.clientHeight}px`, `${0}px`);
-
-    animation.duration(300);
+    animation.easing('ease-in');
+    animation.duration(DELETE_ANIMATION_DURATION);
     animation.onFinish(callback);
     animation.play();
   }
 }
+
+const DELETE_ANIMATION_DURATION = 100;
