@@ -21,7 +21,7 @@ import {EmailDataProvider, Email} from "./email-data-provider";
 })
 export class SnoozedInbox{
 
-  emails: Email[];
+  private emails: Email[];
 
   constructor(private app: App, private emailDataProvider:EmailDataProvider, private nav: NavController){
     this.loadSnoozedEmails();

@@ -1,4 +1,4 @@
-import {Component, ContentChildren, ElementRef, QueryList, ViewChildren} from "@angular/core";
+import {Component, ContentChildren, ElementRef, Input, QueryList, ViewChildren} from "@angular/core";
 import {animate, state, style, trigger, transition} from '@angular/core';
 import {App, Alert, Animation, NavController} from 'ionic-angular';
 
@@ -11,7 +11,8 @@ import {SnoozeViewController} from '../snooze/snooze-view-controller';
   selector: 'unread-inbox',
   directives: [InboxItemWrapper],
   template: `
-  <ion-list>
+  <div>Re-order enabled is: {{reorderEnabled}}</div>
+  <ion-list reorder="reorder">
     <inbox-item-wrapper #instance
       *ngFor="let email of emails; let i = index"
       (click)="favorite(email)"
@@ -38,12 +39,17 @@ import {SnoozeViewController} from '../snooze/snooze-view-controller';
 })
 export class UnreadInbox{
 
+  @Input() reorder: boolean = false;
   @ViewChildren('instance', {read: ElementRef}) itemWrappers: QueryList<ElementRef>;
 
   private emails: Email[];
 
   constructor(private app: App, private emailDataProvider: EmailDataProvider, private nav: NavController){
     this.loadUnreadEmails();
+  }
+
+  ngOnChanges(something){
+    console.log("Something: ", something);
   }
 
   loadUnreadEmails(){
