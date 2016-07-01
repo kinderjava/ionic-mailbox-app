@@ -11,8 +11,7 @@ import {SnoozeViewController} from '../snooze/snooze-view-controller';
   selector: 'unread-inbox',
   directives: [InboxItemWrapper],
   template: `
-  <div>Re-order enabled is: {{reorderEnabled}}</div>
-  <ion-list reorder="reorder">
+  <ion-list reorder="reorderEnabled">
     <inbox-item-wrapper #instance
       *ngFor="let email of emails; let i = index"
       (click)="favorite(email)"
@@ -20,6 +19,7 @@ import {SnoozeViewController} from '../snooze/snooze-view-controller';
       leftIconLong="close"
       rightIconShort="time"
       rightIconLong="menu"
+      [enabled]="!reorderEnabled"
       [overrideRightShortSwipeTransition]="overrideAnimation"
       (leftShortSwipe)="archive(i)"
       (leftLongSwipe)="delete(i)"
@@ -39,17 +39,13 @@ import {SnoozeViewController} from '../snooze/snooze-view-controller';
 })
 export class UnreadInbox{
 
-  @Input() reorder: boolean = false;
+  @Input() reorderEnabled: boolean = false;
   @ViewChildren('instance', {read: ElementRef}) itemWrappers: QueryList<ElementRef>;
 
   private emails: Email[];
 
-  constructor(private alertController: AlertController, private app: App, private emailDataProvider: EmailDataProvider, private nav: NavController){
+  constructor(private alertController: AlertController, private app: App, private emailDataProvider: EmailDataProvider, private nav: NavController, private snoozeViewController: SnoozeViewController){
     this.loadUnreadEmails();
-  }
-
-  ngOnChanges(something){
-    console.log("Something: ", something);
   }
 
   loadUnreadEmails(){
@@ -75,8 +71,8 @@ export class UnreadInbox{
   }
 
   snooze(index: number){
-    let snoozeView = SnoozeViewController.create();
-    snoozeView.onDismiss((data) => {
+    let snoozeView = this.snoozeViewController.create();
+    snoozeView.onDidDismiss((data) => {
       this.animateItemWrapperOut(index, () => {
         this.emailDataProvider.snoozeEmail(this.emails[index], data.snoozedUntilDate);
         this.loadUnreadEmails();

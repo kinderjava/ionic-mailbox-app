@@ -1,7 +1,8 @@
+import {Injectable} from '@angular/core';
 import {App, NavOptions, ViewController} from 'ionic-angular';
 import {SnoozeView} from './snooze-view';
 
-export class SnoozeViewController extends ViewController {
+export class SnoozeViewViewController extends ViewController {
 
   public isAlreadyDismissed: boolean;
 
@@ -23,5 +24,15 @@ export class SnoozeViewController extends ViewController {
 
   present(opts: NavOptions = {}){
     return this.app.present(this, opts);
+  }
+}
+
+@Injectable()
+export class SnoozeViewController {
+  constructor(private app:App){
+  }
+
+  create(){
+    return new SnoozeViewViewController(this.app);
   }
 }

@@ -37,7 +37,7 @@ import {UnreadInbox} from './unread-inbox';
   </ion-header>
   <ion-content [ngSwitch]="activeSegment">
     <snoozed-inbox *ngSwitchCase="'snoozed'">Snoozed</snoozed-inbox>
-    <unread-inbox *ngSwitchCase="'inbox'" [reorder]="reorderEnabled"></unread-inbox>
+    <unread-inbox *ngSwitchCase="'inbox'" [reorderEnabled]="reorderEnabled"></unread-inbox>
     <archived-inbox *ngSwitchCase="'archived'"></archived-inbox>
   </ion-content>
   `

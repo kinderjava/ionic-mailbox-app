@@ -8,6 +8,8 @@ import {TapGestureRecognizerProvider} from './utils/gestures/tap-gesture-recogni
 
 import {EmailDataProvider} from './pages/inbox/email-data-provider';
 
+import {SnoozeViewController} from './pages/snooze/snooze-view-controller';
+
 import {ScrollDisabler} from './utils/scroll-disabler';
 import {WindowProvider} from './utils/window-provider';
 
@@ -26,6 +28,8 @@ export function getProviders(){
 
     providers.push(ScrollDisabler);
     providers.push(WindowProvider);
+
+    providers.push(SnoozeViewController);
 
     return providers;
 }

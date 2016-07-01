@@ -30,6 +30,7 @@ import {ScrollDisabler} from '../../utils/scroll-disabler';
 })
 export class InboxItemWrapper{
 
+  @Input() enabled: boolean = true;
   @Input() leftLabelTextShort: string;
   @Input() leftLabelTextLong: string;
   @Input() leftIconShort: string;
@@ -77,6 +78,9 @@ export class InboxItemWrapper{
     dragGesture.listen();
 
     let onPanStartSubscription = dragGesture.onPanStart.subscribe((event:HammerInput) => {
+      if ( ! this.enabled ){
+        return;
+      }
       this.scrollDisabler.disableScroll();
       this.maximumAchievedVelocity = event.velocityX;
       if ( event.direction === GestureDirection.LEFT ) {
@@ -89,6 +93,9 @@ export class InboxItemWrapper{
     });
 
     let onPanMoveSubscription = dragGesture.onPanMove.subscribe((event:HammerInput) => {
+      if ( ! this.enabled ){
+        return;
+      }
       if ( event.velocityX > this.maximumAchievedVelocity ){
         this.maximumAchievedVelocity = event.velocityX;
       }
@@ -96,7 +103,7 @@ export class InboxItemWrapper{
     });
 
     let onPanEndSubscription = dragGesture.onPanEnd.subscribe((event:HammerInput) => {
-      if ( this.percentageDragged < INCOMPLETE_DRAG_PERCENTAGE ) {
+      if ( ! this.enabled || this.percentageDragged < INCOMPLETE_DRAG_PERCENTAGE ) {
         this.resetDrag(event);
       }
       else if ( this.percentageDragged < SHORT_DRAG_PERCENTAGE ) {

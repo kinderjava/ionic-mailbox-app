@@ -17,6 +17,7 @@ export class MyApp {
     platform.ready().then(() => {
       StatusBar.styleDefault();
     });
+
   }
 }
 
