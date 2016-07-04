@@ -42,7 +42,8 @@
       "platform": "ios",
       "version": "",
       "locator": "ios"
-    }
+    },
+    "android"
   ],
   "name": "image-gallery",
   "description": "image-gallery: An Ionic project"
